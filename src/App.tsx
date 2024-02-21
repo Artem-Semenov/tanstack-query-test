@@ -1,21 +1,57 @@
-import { useQuery } from "@tanstack/react-query";
-
-const todoId = 1;
+import { useEffect } from "react";
+import { useTodos } from "./hooks/useTodos";
+import { useQueryClient } from "@tanstack/react-query";
 
 function App() {
-  const { isLoading, data, isSuccess, error } = useQuery({
-    queryKey: ["todos", todoId],
-    queryFn: async () => {
-      const res = await fetch("https://jsonplaceholder.typicode.com/todos/1");
-      return await res.json();
-    },
-  });
-  console.log(data);
+  const {
+    isLoading,
+    isFetching,
+    data,
+    isSuccess,
+    error,
+    refetch,
+    status,
+    fetchStatus,
+  } = useTodos();
+  // console.log(data);
+
+  useEffect(() => {
+    //onSuccess
+    // isSuccess && data && alert(data[0].title);
+  }, [data]);
+
+  // console.log(fetchStatus);
+
+  const queryClient = useQueryClient();
+
   return (
     <div>
-      <h1>Todo: {data.title}</h1>
+      <button
+        onClick={() => queryClient.invalidateQueries({ queryKey: ["todos"] })}
+      >
+        RefetchData
+      </button>
+      {error && <div>{error.message}</div>}
+      {isFetching && "Fetching..."}
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        <div>
+          <h1>Todos: </h1>
+          {data?.length && (
+            <ul>
+              {data.map((todo) => (
+                <li key={todo.id}>
+                  <b>{todo.id}.&nbsp;</b>
+                  {todo.title}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
-export default App;
+export { App };

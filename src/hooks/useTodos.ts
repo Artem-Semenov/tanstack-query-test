@@ -26,6 +26,9 @@ export const useTodos = () => {
     initialData: initialData,
     enabled: true,
     retry: 0,
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 10,
+    // refetchInterval: 2000,
   });
 };
 
